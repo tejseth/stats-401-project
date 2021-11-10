@@ -1,0 +1,143 @@
+---
+title: "Project Checkpoint"
+author: "Tej Seth and Projeet Mukherjee"
+date: "November 5th, 2021"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    theme: lumen
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Project Checkpoint
+
+This project checkpoint is designed for you to begin your data exploration process. Before creating a multiple linear regression model, you should always familiarize yourself with the data set and its individual variables. In this checkpoint, you will create numerical summaries and visualizations that should help guide your modelling process -- which explanatory variables will help explain the outcome, which variables need any transformation, which variables may need an interaction, etc. 
+
+Most of your data sets have *several* predictors to choose from. In this assignment, I only ask that you analyze a few of them, but **please do not limit yourself to these variables** throughout your final project. Creating your regression model should be an iterative process that uses different analysis techniques to create the best fitting model possible - trying out new variables, examining different transformations, etc.  
+
+You all selected a few *potential* explanatory variables of interest in your project proposal. **These do not have to be the variables used here.** You may find that they're not as helpful in explaining the response as you thought. You are welcome (and encouraged!) to change, adjust, and [pivot](https://www.youtube.com/watch?v=8w3wmQAMoxQ), as needed. 
+
+And if you have any questions throughout the process, please ask us! The instructional team is here to help!
+
+
+
+### Creating an RStudio Project
+
+Now is a good time to create an RStudio Project (like you did in Lab 6) to keep all of your project documents in one place. To do this, please follow these steps:
+
+1. Open up a *new* session of RStudio
+2. Navigate to File > New Project
+3. Click on New Directory
+4. Click on New Project
+5. Give your project a "Directory name" (something like "stats401project")
+6. Decide where you would like the project stored (I keep mine - and all other Stats 401 assignments - in a folder on my computer called stats401)
+7. Click "Create Project" 
+8. Move this "projectCheckpoint.Rmd" document and your data set to the project folder 
+
+
+
+### Read Data
+
+Once you have created your RStudio Project and moved your data set into the folder, you will then be able to read in your data. To do this, you'll use the `read.csv()` function and store it for use throughout the file.
+
+Reach out to us if you need help reading in your data!
+
+```{r readData}
+fifa_22 <- read.csv("players_fifa22.csv")
+
+```
+
+Once you have successfully loaded your data, complete the tasks below to complete the project checkpoint. *Failure to properly follow the instructions will result in point deductions.*
+
+
+
+### Variables (2 points)
+
+Fill in the following bullets with the variables you will be analyzing below. I recommend starting with the variables you described in your project proposal, but these can change throughout your modelling process. There is no specific number of variables that your final model has to contain. 
+
+- Response: `Overall`
+- Quantitative Predictor #1: `Age`
+- Quantitative Predictor #2: replace this text with your variable name
+- Quantitative Predictor #3: replace this text with your variable name
+- Categorical Predictor: replace this text with your variable name
+
+
+
+### Numerical Summaries (4 points)
+
+Run the numerical summaries (using `summary()` or other similar functions) for your quantitative variables (response + predictors).
+
+```{r numericalSummaries}
+# Replace this text with your code
+
+```
+
+What is the mean and range of your *response* variable? This is the variability that you will be trying to explain with your model!
+
+**Answer:** Replace this text with your answer
+
+
+
+### Histograms (10 points)
+
+Create four histograms for your quantitative variables (response + predictors). *Be sure to give each plot appropriate axis labels and a title.* 
+
+```{r histograms}
+# Replace this text with your code
+
+```
+
+In 2 - 3 sentences, reflect on your histograms. Things to consider: Would any of these quantitative variables benefit from a log transformation? Remember, we are looking for a *heavy* right skew - not just a slight right skew. (I recommend plotting the log-transformed variable to verify that the transformation helps.)
+
+**Answer:** Replace this text with your reflection
+
+
+
+### Scatterplot Matrix (6 points)
+
+Create a **scatterplot matrix** of your response against the three quantitative predictors. Note: we are not asking for individual scatterplots.
+
+```{r scatterplotMatrix}
+# Replace this text with your code
+
+```
+
+In 2 - 3 sentences, reflect on your scatterplot matrix. Things to consider: Do there appear to be any significant linear relationships between any of the predictors and your response variable? Would any of the predictors potentially benefit from adding a quadratic term? Are there any strong relationships between two of the predictor variables?
+
+**Answer:** Replace this text with your reflection
+
+
+
+### Boxplot (6 points)
+
+Create a side-by-side boxplot of your response variable versus your categorical predictor. *Be sure to give your plot appropriate axis labels and a title.* 
+
+```{r sideBySideBoxplot}
+# Replace this text with your code
+
+```
+
+In 1 - 2 sentences, reflect on your boxplot. Things to consider: Are there differences in the response between the various groups? Do you think that including the categorical variable would improve your model? (If yes, you may want to create a scatterplot *by groups* in the future!)
+
+**Answer:** Replace this text with your reflection
+
+
+
+
+### Conclusions (4 points)
+
+Write 3 - 5 sentences summarizing your initial findings. Highlight any key findings from the above initial data exploration and where you plan to go from here. If you have any questions for the instructional team (about coding, the direction of your analysis, possible transformations, etc.), you can include them here! This doesn't have to be anything new/profound from what you discovered above. 
+
+**Answer:** Replace this text with your conclusion
+
+
+
+
+
+
