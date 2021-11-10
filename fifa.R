@@ -8,3 +8,4 @@ fifa_small <- fifa_22 %>%
          ShootingTotal, PassingTotal, DribblingTotal, DefendingTotal, PhysicalityTotal)
 
 colSums(is.na(fifa_small))
+

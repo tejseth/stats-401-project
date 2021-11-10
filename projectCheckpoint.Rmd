@@ -49,8 +49,8 @@ Once you have created your RStudio Project and moved your data set into the fold
 Reach out to us if you need help reading in your data!
 
 ```{r readData}
+library(tidyverse)
 fifa_22 <- read.csv("players_fifa22.csv")
-
 ```
 
 Once you have successfully loaded your data, complete the tasks below to complete the project checkpoint. *Failure to properly follow the instructions will result in point deductions.*
@@ -63,9 +63,9 @@ Fill in the following bullets with the variables you will be analyzing below. I 
 
 - Response: `Overall`
 - Quantitative Predictor #1: `Age`
-- Quantitative Predictor #2: replace this text with your variable name
-- Quantitative Predictor #3: replace this text with your variable name
-- Categorical Predictor: replace this text with your variable name
+- Quantitative Predictor #2: `ValueEUR`
+- Quantitative Predictor #3: `ShootingTotal`
+- Categorical Predictor: `BestPosition`
 
 
 
@@ -74,13 +74,15 @@ Fill in the following bullets with the variables you will be analyzing below. I 
 Run the numerical summaries (using `summary()` or other similar functions) for your quantitative variables (response + predictors).
 
 ```{r numericalSummaries}
-# Replace this text with your code
-
+summary(fifa_22$Overall)
+summary(fifa_22$Age)
+summary(fifa_22$ValueEUR)
+summary(fifa_22$ShootingTotal)
 ```
 
 What is the mean and range of your *response* variable? This is the variability that you will be trying to explain with your model!
 
-**Answer:** Replace this text with your answer
+**Answer:** The mean of the response variable is 65.82 and the range is 45 (93 - 48)
 
 
 
@@ -89,13 +91,29 @@ What is the mean and range of your *response* variable? This is the variability 
 Create four histograms for your quantitative variables (response + predictors). *Be sure to give each plot appropriate axis labels and a title.* 
 
 ```{r histograms}
-# Replace this text with your code
+hist(fifa_22$Overall,
+     xlab = "Overall Rating (0-100 Scale)",
+     main = "Histogram of Overall Rating in Fifa 22")
+
+hist(fifa_22$Age,
+     xlab = "Player Age (Years)",
+     main = "Histogram of Player's Age in Fifa 22")
+
+hist(log(fifa_22$ValueEUR),
+     xlab = "Player's Value in Log Scale (Euros)",
+     main = "Histogram of a Player's Value in Euros on a Log Scale in Fifa 22")
+
+hist(fifa_22$ShootingTotal,
+     xlab = "Shooting Rating",
+     main = "Histogram of Shooting Rating in Fifa 22")
 
 ```
 
 In 2 - 3 sentences, reflect on your histograms. Things to consider: Would any of these quantitative variables benefit from a log transformation? Remember, we are looking for a *heavy* right skew - not just a slight right skew. (I recommend plotting the log-transformed variable to verify that the transformation helps.)
 
-**Answer:** Replace this text with your reflection
+**Answer:** `Overall` rating has a pretty normal distribution with a slight right skew.
+`Age` has slightly more of a right skew but giving it a right log scale made it uniform which is not what we want.
+`ValueEUR` did benefit from a log transformation as it fixed it's strong right skew. 
 
 
 
@@ -104,13 +122,19 @@ In 2 - 3 sentences, reflect on your histograms. Things to consider: Would any of
 Create a **scatterplot matrix** of your response against the three quantitative predictors. Note: we are not asking for individual scatterplots.
 
 ```{r scatterplotMatrix}
-# Replace this text with your code
+fifa_select <- fifa_22 %>%
+  select(Overall, ValueEUR, ShootingTotal, Age)
+
+pairs(fifa_select, pch = 19)
 
 ```
 
 In 2 - 3 sentences, reflect on your scatterplot matrix. Things to consider: Do there appear to be any significant linear relationships between any of the predictors and your response variable? Would any of the predictors potentially benefit from adding a quadratic term? Are there any strong relationships between two of the predictor variables?
 
-**Answer:** Replace this text with your reflection
+**Answer:** It's tough to make out becuase of all the data points but there seems 
+to be a quadratic linear relationship between `ValueEUR` and `Overall`. There also seems 
+to be a linear relationship between `ShootingTotal` and `Overall`. On top of that, `ValueEUR`
+and `ShootingTotal` might have a linear relationship that could benefit from adding a quadratic term. 
 
 
 
@@ -119,13 +143,26 @@ In 2 - 3 sentences, reflect on your scatterplot matrix. Things to consider: Do t
 Create a side-by-side boxplot of your response variable versus your categorical predictor. *Be sure to give your plot appropriate axis labels and a title.* 
 
 ```{r sideBySideBoxplot}
-# Replace this text with your code
+fifa_22 %>%
+  group_by(BestPosition) %>%
+  mutate(med = median(Overall)) %>%
+  ungroup() %>% 
+  ggplot(aes(x = fct_reorder(BestPosition, med), y = Overall)) +
+  geom_boxplot(aes(fill = fct_reorder(BestPosition, med))) +
+  scale_fill_viridis_d() +
+  theme_bw() +
+  labs(x = "Position",
+       y = "Overall Rating",
+       title = "Overall Rating by Position in Fifa 22",
+       fill = "Position")
 
 ```
 
 In 1 - 2 sentences, reflect on your boxplot. Things to consider: Are there differences in the response between the various groups? Do you think that including the categorical variable would improve your model? (If yes, you may want to create a scatterplot *by groups* in the future!)
 
-**Answer:** Replace this text with your reflection
+**Answer:** I think that there are slight differences between the groups such as CF 
+having a median rating of 70 while RF has a median rating a couple points lower. Overall,
+the differences aren't big enough to immensely help out the model. 
 
 
 
@@ -134,7 +171,12 @@ In 1 - 2 sentences, reflect on your boxplot. Things to consider: Are there diffe
 
 Write 3 - 5 sentences summarizing your initial findings. Highlight any key findings from the above initial data exploration and where you plan to go from here. If you have any questions for the instructional team (about coding, the direction of your analysis, possible transformations, etc.), you can include them here! This doesn't have to be anything new/profound from what you discovered above. 
 
-**Answer:** Replace this text with your conclusion
+**Answer:** One of the key findings is that `ValueEUR` is strongly right skewed and
+will need to be log transformed because of that when we make our model. It also seems
+like it has might need to have a quadratic opponent the modeling with `Overall`. The response
+variable being normally distributed is going to be helpful in the modeling process. The next
+steps from here are to add these variables into the model and see the different interaction terms
+and then decide if any more variales need to be added from there. 
 
 
 
