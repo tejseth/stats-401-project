@@ -1,0 +1,139 @@
+---
+title: "Fifa Ratings: Multiple Linear Regressions Model"
+subtitle: "By Tej Seth and Projeet Mukherjee"
+output: html_document
+---
+
+```{r setup, include=FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+## I. Introduction 
+
+Alex on Kaggle has compiled datasets from sofifa.com relating to the FIFA22 soccer
+video game made by EA Sports. The dataset we chose to analyze is the `players_fifa22.csv`
+dataset. The overall dataset has 19,260 rows and 90 columns.
+It has a mix of different types of variables such as a player's cateogirical variables like 
+name, country, club team, position, etc. as well as over 70 quantative variables including their 
+overall rating and their shooting rating, how much their contract is worth and more.
+
+In FIFA, the most important thing for a player's performance is their `Overall`. 
+Because of that, we will make that the response variable and try to model is based
+on quantitative variables such as `Age`, `Height`, `ShootingTotal`, 
+`PassingTotal`, `DefendingTotal`, `PhysicalityTotal` and `ValueEUR` 
+and a categorical variable such as `BestPosition`. These variables provide a 
+good base for creating a multiple linear regressions model to predict a player's 
+overall rating in the game. 
+
+```{r load-packages}
+library(tidyverse)
+library(ggthemes)
+options(scipen = 9999)
+
+theme_reach <- function() {
+  theme_fivethirtyeight() +
+    theme(
+      legend.position = "none",
+      plot.title = element_text(size = 22, hjust = 0.5, face = "bold"),
+      plot.subtitle = element_text(size = 18, hjust = 0.5),
+      axis.title.x = element_text(size=18),
+      axis.title.y = element_text(size=18),
+      axis.text = element_text(size = 14),
+      strip.text = element_text(size = 16, face = "bold"),
+      legend.text = element_text(size = 14),
+    )
+}
+
+fifa_22 <- read_csv(url("https://raw.githubusercontent.com/tejseth/stats-401-project/master/players_fifa22.csv"))
+```
+ 
+
+## II. Early Data Analysis (EDA)
+
+With a dataset of this magnitude, we felt like it was important to select
+just the variables we needed. On top of that, since 19,260 rows is a lot of data
+to work with, we randomly selected a quarter of it (4,815 rows) so that it's
+easier to see the correlations and use.
+
+```{r making dataset smaller}
+fifa_small <- fifa_22 %>%
+  select(FullName, Age, Height, Weight, PhotoUrl, Overall, BestPosition, ValueEUR,
+         ShootingTotal, PassingTotal, DefendingTotal, PhysicalityTotal)
+
+fifa_smallest <- sample_n(fifa_small, 4815)
+
+```
+
+Now that we had the parameters of the dataset we wanted, we can do some early
+data analysis on it by looking at distributions by using histograms to see if
+the data is normally distributed or needs to be log transformed in the model. 
+
+```{r making histograms, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = Overall)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Overall Rating",
+       y = "Count",
+       title = "Histogram of Overall Rating in FIFA 22")
+
+fifa_smallest %>%
+  ggplot(aes(x = ValueEUR)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Contract Value (Euro's)",
+       y = "Count",
+       title = "Histogram of Contract Value in FIFA 22")
+
+fifa_smallest %>%
+  ggplot(aes(x = ShootingTotal)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Shooting Rating",
+       y = "Count",
+       title = "Histogram of Shooting Rating in FIFA 22")
+
+fifa_smallest %>%
+  ggplot(aes(x = ShootingTotal)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Shooting Rating",
+       y = "Count",
+       title = "Histogram of Shooting Rating in FIFA 22")
+
+fifa_smallest %>%
+  ggplot(aes(x = PassingTotal)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Passing Rating",
+       y = "Count",
+       title = "Histogram of Passing Rating in FIFA 22")
+
+fifa_smallest %>%
+  ggplot(aes(x = DefendingTotal)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Defending Rating",
+       y = "Count",
+       title = "Histogram of Passing Rating in FIFA 22")
+
+fifa_smallest %>%
+  ggplot(aes(x = PhysicalityTotal)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 60) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Physicality Rating",
+       y = "Count",
+       title = "Histogram of Passing Physicality in FIFA 22")
+
+
+```
+
+
