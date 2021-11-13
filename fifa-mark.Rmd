@@ -77,7 +77,9 @@ fifa_smallest %>%
   theme_reach() +
   labs(x = "Overall Rating",
        y = "Count",
-       title = "Histogram of Overall Rating in FIFA 22")
+       title = "Histogram of Overall Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
 
 fifa_smallest %>%
   ggplot(aes(x = ValueEUR)) +
@@ -86,7 +88,9 @@ fifa_smallest %>%
   theme_reach() +
   labs(x = "Contract Value (Euro's)",
        y = "Count",
-       title = "Histogram of Contract Value in FIFA 22")
+       title = "Histogram of Contract Value in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
 
 fifa_smallest %>%
   ggplot(aes(x = ShootingTotal)) +
@@ -95,16 +99,9 @@ fifa_smallest %>%
   theme_reach() +
   labs(x = "Shooting Rating",
        y = "Count",
-       title = "Histogram of Shooting Rating in FIFA 22")
-
-fifa_smallest %>%
-  ggplot(aes(x = ShootingTotal)) +
-  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
-  scale_color_identity() +
-  theme_reach() +
-  labs(x = "Shooting Rating",
-       y = "Count",
-       title = "Histogram of Shooting Rating in FIFA 22")
+       title = "Histogram of Shooting Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
 
 fifa_smallest %>%
   ggplot(aes(x = PassingTotal)) +
@@ -113,7 +110,9 @@ fifa_smallest %>%
   theme_reach() +
   labs(x = "Passing Rating",
        y = "Count",
-       title = "Histogram of Passing Rating in FIFA 22")
+       title = "Histogram of Passing Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
 
 fifa_smallest %>%
   ggplot(aes(x = DefendingTotal)) +
@@ -122,7 +121,9 @@ fifa_smallest %>%
   theme_reach() +
   labs(x = "Defending Rating",
        y = "Count",
-       title = "Histogram of Passing Rating in FIFA 22")
+       title = "Histogram of Defending Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
 
 fifa_smallest %>%
   ggplot(aes(x = PhysicalityTotal)) +
@@ -131,7 +132,9 @@ fifa_smallest %>%
   theme_reach() +
   labs(x = "Physicality Rating",
        y = "Count",
-       title = "Histogram of Passing Physicality in FIFA 22")
+       title = "Histogram of Physicality Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
 
 
 ```
