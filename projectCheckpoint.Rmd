@@ -82,7 +82,7 @@ summary(fifa_22$ShootingTotal)
 
 What is the mean and range of your *response* variable? This is the variability that you will be trying to explain with your model!
 
-**Answer:** The mean of the response variable is 65.82 and the range is 45 (93 - 48)
+**Answer:** The mean of the response variable is 65.82 and the range is 45 (93-48)
 
 
 
@@ -112,8 +112,7 @@ hist(fifa_22$ShootingTotal,
 In 2 - 3 sentences, reflect on your histograms. Things to consider: Would any of these quantitative variables benefit from a log transformation? Remember, we are looking for a *heavy* right skew - not just a slight right skew. (I recommend plotting the log-transformed variable to verify that the transformation helps.)
 
 **Answer:** `Overall` rating has a pretty normal distribution with a slight right skew.
-`Age` has slightly more of a right skew but giving it a right log scale made it uniform which is not what we want.
-`ValueEUR` did benefit from a log transformation as it fixed it's strong right skew. 
+`Age` has slightly more of a right skew but giving it a right log scale made it uniform which is not what we want. `ValueEUR` did benefit from a log transformation as it fixed its strong right skew. 
 
 
 
@@ -131,7 +130,7 @@ pairs(fifa_select, pch = 19)
 
 In 2 - 3 sentences, reflect on your scatterplot matrix. Things to consider: Do there appear to be any significant linear relationships between any of the predictors and your response variable? Would any of the predictors potentially benefit from adding a quadratic term? Are there any strong relationships between two of the predictor variables?
 
-**Answer:** It's tough to make out becuase of all the data points but there seems 
+**Answer:** It's tough to make out because of all the data points but there seems 
 to be a quadratic linear relationship between `ValueEUR` and `Overall`. There also seems 
 to be a linear relationship between `ShootingTotal` and `Overall`. On top of that, `ValueEUR`
 and `ShootingTotal` might have a linear relationship that could benefit from adding a quadratic term. 
@@ -176,7 +175,7 @@ will need to be log transformed because of that when we make our model. It also 
 like it has might need to have a quadratic opponent the modeling with `Overall`. The response
 variable being normally distributed is going to be helpful in the modeling process. The next
 steps from here are to add these variables into the model and see the different interaction terms
-and then decide if any more variales need to be added from there. 
+and then decide if any more variables need to be added from there. 
 
 
 
