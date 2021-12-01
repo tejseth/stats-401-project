@@ -1,7 +1,11 @@
 ---
-title: "Fifa Ratings: Multiple Linear Regressions Model"
-subtitle: "By Tej Seth and Projeet Mukherjee"
-output: html_document
+title: 'Fifa Ratings: Multiple Linear Regression Model'
+subtitle: By Tej Seth and Projeet Mukherjee
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
 ---
 
 ```{r setup, include=FALSE, message = FALSE}
@@ -29,6 +33,11 @@ overall rating in the game.
 ```{r load-packages}
 library(tidyverse)
 library(ggthemes)
+library(car)
+library(vip)
+library(leaps)
+library(HH)
+library(qqplotr)
 options(scipen = 9999)
 
 theme_reach <- function() {
@@ -58,10 +67,12 @@ easier to see the correlations and use.
 
 ```{r making dataset smaller}
 fifa_small <- fifa_22 %>%
-  select(FullName, Age, Height, Weight, PhotoUrl, Overall, BestPosition, ValueEUR,
+  dplyr::select(FullName, Age, Height, Weight, PhotoUrl, Overall, BestPosition, ValueEUR,
          ShootingTotal, PassingTotal, DefendingTotal, PhysicalityTotal)
 
 fifa_smallest <- sample_n(fifa_small, 4815)
+
+fifa_smallest <- fifa_smallest %>% filter(ValueEUR > 0)
 
 ```
 
@@ -139,4 +150,184 @@ fifa_smallest %>%
 
 ```
 
+With the histograms done, we can also make scatterplots with each explanatory
+variable on the x-axis and the response variable of `Overall` on the y-axis
+
+```{r scatter plots, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = Age, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Age (Years)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Age and Overall Rating")
+
+fifa_smallest %>%
+  ggplot(aes(x = Height, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Height (Centimeters)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Height and Overall Rating")
+
+fifa_smallest %>%
+  ggplot(aes(x = ShootingTotal, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Shooting Rating (0-100)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Shooting Rating and Overall Rating")
+
+fifa_smallest %>%
+  ggplot(aes(x = DefendingTotal, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Defending Rating (0-100)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Defending Rating and Overall Rating")
+
+fifa_smallest %>%
+  ggplot(aes(x = PassingTotal, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Passing Rating (0-100)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Dribbling Rating and Overall Rating")
+
+fifa_smallest %>%
+  ggplot(aes(x = PhysicalityTotal, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Physicality Rating (0-100)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Physicality Rating and Overall Rating")
+
+
+fifa_smallest %>%
+  ggplot(aes(x = log(ValueEUR), y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Log-Transformed Contract Value (Euros)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Logged Contract Value and Overall Rating")
+
+```
+
+We also can make a boxplot to analyze the differences in `Overall` rating based
+on position. 
+
+```{r boxplot, fig.width = 16, fig.height = 10} 
+fifa_smallest %>%
+  group_by(BestPosition) %>%
+  mutate(med = median(Overall)) %>%
+  ungroup() %>% 
+  ggplot(aes(x = fct_reorder(BestPosition, med), y = Overall)) +
+  geom_boxplot(aes(fill = fct_reorder(BestPosition, med))) +
+  scale_fill_viridis_d() +
+  theme_reach() +
+  labs(x = "Position",
+       y = "Overall Rating",
+       title = "Overall Rating by Position in Fifa 22",
+       fill = "Position") +
+  theme(axis.text.x = element_text(angle = -30))
+```
+
+An interaction term can be explored between `ValueEUR` and `BestPosition` as positional
+importance might play an impact in soccer and thus clubs pay for players based 
+on their skill level and the position they play. 
+
+```{r interaction graph, fig.width = 16, fig.height = 10} 
+fifa_smallest %>%
+  ggplot(aes(x = log(ValueEUR), y = Overall, color = BestPosition)) +
+  geom_point(aes(shape = BestPosition, color = BestPosition), size = 4, alpha = 0.2) +
+  geom_smooth(se = FALSE, size = 2) +
+  theme_reach() +
+  theme(legend.position = "bottom") +
+  labs(x = "Log-Transformed Contract Value (Euros)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Logged Contract Value and Overall Rating by Position")
+
+```
+
+In context of the data, contract values vary significant in soccer depending on the position. As seen in the graph, defensive players and goalies are typically valued much less than positions such as center attacking mids and strikers. The interaction term helps account for the difference in slopes and intercepts. 
+
+## III. Making the Model
+
+The first thing we can do to make the model is check the adjusted R^2 for each
+model subset to make sure we're not using too few or too many variables. As shown
+in the plot above, an interaction term should be added between `ValueEUR` and
+`BestPosition` as there can be different slopes. 
+
+```{r lm subsets}
+fifa_full <- regsubsets(Overall ~ Age + Height + ShootingTotal + I(ShootingTotal^2) + 
+                 DefendingTotal + I(DefendingTotal^2)  + PassingTotal + 
+                PhysicalityTotal + log(ValueEUR) * BestPosition, data = fifa_smallest)
+
+summaryHH(fifa_full)
+
+```
+We can see that the best adjusted R^2 is the 8th model with all the varibales 
+included. Next, we can build the model and check for covariance. Since some
+variables have a quadratic term, we will remove those when calculating covariance. 
+
+
+```{r lm equation}
+lm_fifa <- lm(Overall ~ Age + Height + ShootingTotal + I(ShootingTotal^2) + 
+                 DefendingTotal + I(DefendingTotal^2)  + PassingTotal + 
+                PhysicalityTotal + log(ValueEUR) * BestPosition, data = fifa_smallest)
+                 
+summary(lm_fifa)
+
+lm_fifa_vif <- lm(Overall ~ Age + Height +
+                 DefendingTotal  + PassingTotal + PhysicalityTotal + 
+                   log(ValueEUR) + BestPosition, data = fifa_smallest)
+
+vif(lm_fifa_vif)
+
+```
+
+Since `ShootingTotal`, `DefendingTotal`, and `PassingTotal` have vif scores
+that are over 5, we can assume that there is some multicollinearity happening between
+those variables. Since `ShootingTotal` and `I(ShootingTotal)^2` didn't have 
+much of a significance in the summary of the model, we can remove those so that 
+no more covariance exists within the model. 
+
+```{r final model, fig.width = 16, fig.height = 10}
+fifa_full <- lm(Overall ~ Age + Height + DefendingTotal + 
+                        I(DefendingTotal^2)  + PassingTotal + PhysicalityTotal + 
+                          log(ValueEUR) * BestPosition, data = fifa_smallest)
+
+summary(fifa_full)
+
+```
+
+```{r diagnostic plots, fig.width = 16, fig.height = 10}
+
+plot(fifa_full$fitted.values, fifa_full$residuals, 
+     xlab = "Fitted Values",
+     ylab = "Residuals",
+     main = "Fitted Value and Residuals Plot")
+
+qqnorm(fifa_full$residuals, main = "QQ Plot of the Residuals")
+qqline(fifa_full$residuals)
+```
+
+We use the above residuals vs fitted values plot to test for our assumption of linearity and constant variance. For Linearity, we can say that our data reasonably meets the requirements since there seems to be no clear pattern to the data other than a slight downwards tail at the end. For constant variance however, our data does not meet the requirement since there appears to be differences and inconsistencies in vertical fluctuation of the curve when moving from left to right.
+
+We use the QQ plot above to test for normality within our data. Overall, we can say that our data reasonably meets this requirement because a huge majority of the data falls on the linear line plotted on the graph. Near the beginning and the end of the graph we see some deviation, but this is expected because it can be expected that there are some players that could initially be valued low that end up having surprising breakout seasons in addition to players that could be valued very highly but then have below average seasons. As a result, we can say that the assumption of normality is met and it logically makes sense that there is some deviation for very high and low ratings.
+
+## IV. Conclusion 
+
+Our overall goal with this model was to create a regression model to indicate overall player rating in the Fifa 22 video game. Our early data for several variables ended up being fairly consistent other than a logarithmic function needed for `ValueEUR` since the data was highly right skewed, and a quadratic function for the shooting and defending totals since the relationship was not linear. In addition, we included an interaction term for `ValueEUR` and `BestPosition` based on the fact the slopes vary, so each of these variables differ in the way they affect our overall response variable of player rating. 
+
+Next, we confirmed our final model with all the transformations included above and checked for multicollinearity. We did this by calculating the variance inflation factors to see if any of these values were above 10. None of them ended up being that high but it is important to note that our `DefendingTotal` variable and `ShootingTotal` variable had values slightly above 5 which can reflect a minimal amount of multic to some extent and since taking out `ShootingTotal` doesn’t change the adjusted R^2 it was reasonable to do that for the final model.
+
+We were pleased with the results as the adjusted R^2 of 0.9722 is very high for a linear regression model, especially one that doesn’t show signs of overfitting, multicollinearity and overparameterization. In terms of our diagnostic plots, for our assumptions of linearity and normality we were satisfied but not with our assumption of constant variance. For linearity, our residual vs fitted values plot reasonably met as there wasn’t a clear and consistent pattern present, and for normality our QQ plot didn’t have major deviations other than a few points at the beginning and end of the plot. For the assumption of constant variance, the width of the band of residuals from left to right are definitely inconsistent so we were not comfortable saying that this assumption was reasonably met. 
 
