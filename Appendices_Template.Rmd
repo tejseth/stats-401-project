@@ -1,0 +1,374 @@
+---
+title: "Appendices"
+author: "Tej Seth and Projeet Mukherjee"
+output: html_document
+---
+
+```{r setup, include=FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+
+```{r packages, include = FALSE}
+library(tidyverse)
+library(ggthemes)
+library(car)
+library(vip)
+library(leaps)
+library(HH)
+library(qqplotr)
+options(scipen = 9999)
+
+theme_reach <- function() {
+  theme_fivethirtyeight() +
+    theme(
+      legend.position = "none",
+      plot.title = element_text(size = 22, hjust = 0.5, face = "bold"),
+      plot.subtitle = element_text(size = 18, hjust = 0.5),
+      axis.title.x = element_text(size=18),
+      axis.title.y = element_text(size=18),
+      axis.text = element_text(size = 14),
+      strip.text = element_text(size = 16, face = "bold"),
+      legend.text = element_text(size = 14),
+    )
+}
+
+```
+
+
+```{r readData, include = FALSE}
+fifa_22 <- read_csv(url("https://raw.githubusercontent.com/tejseth/stats-401-project/master/players_fifa22.csv"))
+
+fifa_small <- fifa_22 %>%
+  dplyr::select(FullName, Age, Height, Weight, PhotoUrl, Overall, BestPosition, ValueEUR,
+         ShootingTotal, PassingTotal, DefendingTotal, PhysicalityTotal)
+
+fifa_smallest <- sample_n(fifa_small, 4815)
+
+fifa_smallest <- fifa_smallest %>% filter(ValueEUR > 0)
+```
+
+***
+
+#### Figure 1: Histogram of Overall
+
+```{r figure1, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = Overall)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Overall Rating",
+       y = "Count",
+       title = "Histogram of Overall Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
+```
+
+***
+
+#### Figure 2: Histogram of Shooting Rating
+
+```{r figure2, echo=FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = ShootingTotal)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Shooting Rating",
+       y = "Count",
+       title = "Histogram of Shooting Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
+```
+
+***
+
+#### Figure 3: Histogram of Passing Rating
+
+```{r figure3, echo=FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = PassingTotal)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Passing Rating",
+       y = "Count",
+       title = "Histogram of Passing Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
+```
+
+***
+
+#### Figure 4: Histogram of Defending Rating
+
+```{r figure4, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = DefendingTotal)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Defending Rating",
+       y = "Count",
+       title = "Histogram of Defending Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
+```
+
+***
+
+#### Figure 5: Histogram of Physicality Total
+
+```{r figure 5, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = PhysicalityTotal)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 60) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Physicality Rating",
+       y = "Count",
+       title = "Histogram of Physicality Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
+```
+
+***
+
+#### Figure 6: Histogram of Age
+
+```{r figure6, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = Age)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Age",
+       y = "Count",
+       title = "Histogram of Age in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
+```
+***
+
+#### Figure 7: Histogram of Height
+
+```{r figure7, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = Height)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Height",
+       y = "Count",
+       title = "Histogram of Height in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
+```
+
+***
+
+#### Figure 8: Histogram of Contract Value
+
+```{r figure8, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = ValueEUR)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Contract Value (Euro's)",
+       y = "Count",
+       title = "Histogram of Contract Value in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
+```
+
+*** 
+
+#### Figure 9: Scatter Plot of Contract Value and Overall
+
+```{r figure9, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = log(ValueEUR), y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Log-Transformed Contract Value (Euros)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Logged Contract Value and Overall Rating")
+```
+*** 
+
+#### Figure 10: Scatter Plot of Age and Overall
+
+```{r figure10, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = Age, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Age (Years)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Age and Overall Rating")
+```
+
+*** 
+
+#### Figure 11: Scatter Plot of Height and Overall
+
+```{r figure11, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = Height, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Height (Centimeters)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Height and Overall Rating")
+```
+
+*** 
+
+#### Figure 12: Scatter Plot of Shooting Rating and Overall
+
+```{r figure12, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = ShootingTotal, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Shooting Rating (0-100)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Shooting Rating and Overall Rating")
+```
+
+*** 
+
+#### Figure 13: Scatter Plot of Defending Rating and Overall
+
+```{r figure13, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = DefendingTotal, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Defending Rating (0-100)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Defending Rating and Overall Rating")
+```
+
+*** 
+
+#### Figure 14: Scatter Plot of Passing Rating and Overall
+
+```{r figure14, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = PassingTotal, y = Overall)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.2) +
+  geom_point(fill = "darkorange", shape = 21, color = "black", alpha = 0.8, size = 3.5) +
+  theme_reach() +
+  labs(x = "Passing Rating (0-100)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Passing Rating and Overall Rating")
+```
+
+*** 
+
+#### Figure 15: Boxplot of Overall Rating by Position
+
+```{r figure15, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  group_by(BestPosition) %>%
+  mutate(med = median(Overall)) %>%
+  ungroup() %>% 
+  ggplot(aes(x = fct_reorder(BestPosition, med), y = Overall)) +
+  geom_boxplot(aes(fill = fct_reorder(BestPosition, med))) +
+  scale_fill_viridis_d() +
+  theme_reach() +
+  labs(x = "Position",
+       y = "Overall Rating",
+       title = "Overall Rating by Position in Fifa 22",
+       fill = "Position") +
+  theme(axis.text.x = element_text(angle = -30))
+```
+
+*** 
+
+#### Figure 16: Interaction Terms
+
+```{r figure16, echo = FALSE, fig.height = 10, fig.width = 16}
+fifa_smallest %>%
+  ggplot(aes(x = log(ValueEUR), y = Overall, color = BestPosition)) +
+  geom_point(aes(shape = BestPosition, color = BestPosition), size = 4, alpha = 0.2) +
+  geom_smooth(se = FALSE, size = 2) +
+  theme_reach() +
+  theme(legend.position = "bottom") +
+  labs(x = "Log-Transformed Contract Value (Euros)",
+       y = "Overall (0-100)",
+       title = "Scatterplot of Logged Contract Value and Overall Rating by Position")
+```
+
+*** 
+
+#### Figure 17: Building the Model Subsets
+
+```{r figure17, echo = FALSE}
+fifa_full <- regsubsets(Overall ~ Age + Height + ShootingTotal + I(ShootingTotal^2) + 
+                 DefendingTotal + I(DefendingTotal^2)  + PassingTotal + 
+                PhysicalityTotal + log(ValueEUR) * BestPosition, data = fifa_smallest)
+
+summaryHH(fifa_full)
+```
+
+*** 
+
+#### Figure 18: VIF Scores for the Model
+
+```{r figure18, echo = FALSE}
+lm_fifa <- lm(Overall ~ Age + Height + ShootingTotal + I(ShootingTotal^2) + 
+                 DefendingTotal + I(DefendingTotal^2)  + PassingTotal + 
+                PhysicalityTotal + log(ValueEUR) * BestPosition, data = fifa_smallest)
+                 
+#summary(lm_fifa)
+
+lm_fifa_vif <- lm(Overall ~ Age + Height +
+                 DefendingTotal  + PassingTotal + PhysicalityTotal + 
+                   log(ValueEUR) + BestPosition, data = fifa_smallest)
+
+vif(lm_fifa_vif)
+
+```
+
+*** 
+
+#### Figure 19: Final Model
+
+```{r figure19, echo = FALSE}
+fifa_full <- lm(Overall ~ Age + Height + DefendingTotal + 
+                        I(DefendingTotal^2)  + PassingTotal + PhysicalityTotal + 
+                          log(ValueEUR) * BestPosition, data = fifa_smallest)
+
+summary(fifa_full)
+
+```
+
+*** 
+
+#### Figure 20: Residuals vs. Fitted Plot
+
+```{r figure20, echo = FALSE, fig.width = 16, fig.height = 10}
+plot(fifa_full$fitted.values, fifa_full$residuals, 
+     xlab = "Fitted Values",
+     ylab = "Residuals",
+     main = "Fitted Value and Residuals Plot")
+
+```
+
+#### Figure 21: QQ Plot
+
+```{r figure21, echo = FALSE, fig.width = 16, fig.height = 10}
+qqnorm(fifa_full$residuals, main = "QQ Plot of the Residuals")
+qqline(fifa_full$residuals)
+
+```

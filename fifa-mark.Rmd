@@ -2,9 +2,9 @@
 title: 'Fifa Ratings: Multiple Linear Regression Model'
 subtitle: By Tej Seth and Projeet Mukherjee
 output:
-  pdf_document:
-    toc: yes
   html_document:
+    toc: yes
+  pdf_document:
     toc: yes
 ---
 
@@ -89,6 +89,28 @@ fifa_smallest %>%
   labs(x = "Overall Rating",
        y = "Count",
        title = "Histogram of Overall Rating in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
+
+fifa_smallest %>%
+  ggplot(aes(x = Age)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Age",
+       y = "Count",
+       title = "Histogram of Age in FIFA 22") +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_y_continuous(breaks = scales::pretty_breaks())
+
+fifa_smallest %>%
+  ggplot(aes(x = Height)) +
+  geom_histogram(fill = "#012e67", alpha = 0.9, bins = 40) +
+  scale_color_identity() +
+  theme_reach() +
+  labs(x = "Height",
+       y = "Count",
+       title = "Histogram of Height in FIFA 22") +
   scale_x_continuous(breaks = scales::pretty_breaks()) +
   scale_y_continuous(breaks = scales::pretty_breaks())
 
@@ -197,7 +219,7 @@ fifa_smallest %>%
   theme_reach() +
   labs(x = "Passing Rating (0-100)",
        y = "Overall (0-100)",
-       title = "Scatterplot of Dribbling Rating and Overall Rating")
+       title = "Scatterplot of Passing Rating and Overall Rating")
 
 fifa_smallest %>%
   ggplot(aes(x = PhysicalityTotal, y = Overall)) +
